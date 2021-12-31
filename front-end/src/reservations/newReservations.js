@@ -1,5 +1,7 @@
 import React, {useState} from "react";
 import { useHistory } from "react-router";
+import ErrorAlert from "../layout/ErrorAlert";
+
 export default function NewReservations() {
     const history = useHistory()
     const initialData = {
@@ -10,7 +12,7 @@ export default function NewReservations() {
         reservation_time: "",
         people: 0,
     }
-
+    const [errors, setErrors] = useState([])
     const [formData, setFormData] = useState(initialData)
     const handleChange = ({target: {name, value}}) => {
         setFormData((prevForm) => ({
@@ -21,12 +23,28 @@ export default function NewReservations() {
 
     const handleSubmit = (e) => {
         e.preventDefault();
+        const errorsList = []
+        for (let [key,value] of Object.entries(formData)) {
+            if (value === ""){
+                errorsList.push({ message : `${key.split("_").join(" ")} cant be blank` })
+            }
+        }
+        setErrors(() => errorsList)
         //Right now, we can get the final data when hitting submit button
-        //We're gonna handle this data later on
-        console.log(formData)
+        //We're gonna make API calls later on
+        //We're also able to get Errors when the form fields are blank
+        // console.log(formData)
+        // console.log(errors)
     }
+
+    const renderErrors = errors.length && errors.map((error,idx) => {
+        return (
+            <ErrorAlert key = {idx} error = {error} /> 
+        )
+    })
     return (
         <>
+        {errors.length !== 0 && renderErrors}
         <form onSubmit={handleSubmit}>
             <div>
                 <label  htmlFor = "first_name">First Name</label>
@@ -35,7 +53,7 @@ export default function NewReservations() {
                         type = "text"
                         value = {formData.first_name}
                         onChange = {handleChange}
-                        required
+                        // required
                 />
             </div>
             <div>
@@ -45,7 +63,7 @@ export default function NewReservations() {
                         type = "text"
                         value = {formData.last_name}
                         onChange = {handleChange}
-                        required 
+                        // required 
                 />
             </div>
             <div>
@@ -55,7 +73,7 @@ export default function NewReservations() {
                         type = "tel"
                         value = {formData.mobile_number}
                         onChange = {handleChange}
-                        required 
+                        // required 
                 />
             </div>
             <div>
@@ -65,7 +83,7 @@ export default function NewReservations() {
                         type = "date"
                         value = {formData.reservation_date}
                         onChange = {handleChange}
-                        required 
+                        // required 
                 />
             </div>
             <div>
@@ -75,7 +93,7 @@ export default function NewReservations() {
                         type = "time"
                         value = {formData.reservation_time}
                         onChange = {handleChange}
-                        required 
+                        // required 
                 />
             </div>
             <div>
@@ -85,11 +103,11 @@ export default function NewReservations() {
                         type = "tel"
                         value = {formData.people}
                         onChange = {handleChange}
-                        required 
+                        // required 
                 />
             </div>
             <div>
-                <button type ="submit" onClick={history.goBack}>Submit</button>
+                <button type ="submit" >Submit</button>
                 <button type ="button" onClick={history.goBack}>Cancel</button>
             </div>
         </form>
