@@ -2,9 +2,6 @@ import React, {useState} from "react";
 import { useHistory } from "react-router";
 import ErrorAlert from "../layout/ErrorAlert";
 
-
-
-
 export default function NewReservations() {
     const history = useHistory()
     const initialData = {
@@ -23,12 +20,10 @@ export default function NewReservations() {
             [name]: value
         }))
     }
-
-    const validateDate = () => {
-        const reserveDate = new Date(formData.reservation_date)
+    const validateDate = (foundErrors) => {
+        const reserveDate = new Date(`${formData.reservation_date}T${formData.reservation_time}:00.000`);
         const todaysDate = new Date();
-        const foundErrors = []
-        if (reserveDate.getDay() === 1){ /// Tuesday equals to 1
+        if (reserveDate.getDay() === 2){
             foundErrors.push({
                 message: "Reservations cannot be made on a Tuesday (Restaurant is closed)."
             })
@@ -36,28 +31,37 @@ export default function NewReservations() {
         if (reserveDate<todaysDate){
             foundErrors.push({ message: "Reservations cannot be made in the past." });
         }
-        setErrors(foundErrors)
-        if(foundErrors.length > 0) {
-            return false;
-        } else return true
+
+        if(reserveDate.getHours() < 10 || (reserveDate.getHours() === 10 && reserveDate.getMinutes() < 30)) {
+            foundErrors.push({ message: "Reservation cannot be made: Restaurant is not open until 10:30AM." });
+        } else if(reserveDate.getHours() > 22 || (reserveDate.getHours() === 22 && reserveDate.getMinutes() >= 30)) {
+            foundErrors.push({ message: "Reservation cannot be made: Restaurant is closed after 10:30PM." });
+        } else if(reserveDate.getHours() > 21 || (reserveDate.getHours() === 21 && reserveDate.getMinutes() > 30)) {
+            foundErrors.push({ message: "Reservation cannot be made: Reservation must be made at least an hour before closing (10:30PM)." })
+        }
+        
+        return foundErrors.length === 0;
+    }
+
+    function validateFields(foundErrors) {
+        for(const field in formData) {
+            if(formData[field] === "") {
+                foundErrors.push({ message: `${field.split("_").join(" ")} cannot be left blank.`})
+            }
+        }
+    
+        if(formData.people <= 0) {
+            foundErrors.push({ message: "Party must be a size of at least 1." })
+        }
+        return foundErrors.length === 0;
     }
     const handleSubmit = (e) => {
         e.preventDefault();
-        if (validateDate()) {
+		const foundErrors = [];
+        if (validateDate(foundErrors) && validateFields(foundErrors)) {
             history.push(`/dashboard?date=${formData.reservation_date}`);
         }
-        // const errorsList = []
-        // for (let [key,value] of Object.entries(formData)) {
-        //     if (value === ""){
-        //         errorsList.push({ message : `${key.split("_").join(" ")} cant be blank` })
-        //     }
-        // }
-        // setErrors(() => errorsList)
-        //Right now, we can get the final data when hitting submit button
-        //We're gonna make API calls later on
-        //We're also able to get Errors when the form fields are blank
-        // console.log(formData)
-        // console.log(errors)
+        setErrors(foundErrors)
     }
     const renderedErrors = () => {
         return errors.map((error, idx) => <ErrorAlert key={idx} error={error} />);
