@@ -2,6 +2,9 @@ import React, {useState} from "react";
 import { useHistory } from "react-router";
 import ErrorAlert from "../layout/ErrorAlert";
 
+
+
+
 export default function NewReservations() {
     const history = useHistory()
     const initialData = {
@@ -21,30 +24,47 @@ export default function NewReservations() {
         }))
     }
 
+    const validateDate = () => {
+        const reserveDate = new Date(formData.reservation_date)
+        const todaysDate = new Date();
+        const foundErrors = []
+        if (reserveDate.getDay() === 1){ /// Tuesday equals to 1
+            foundErrors.push({
+                message: "Reservations cannot be made on a Tuesday (Restaurant is closed)."
+            })
+        }
+        if (reserveDate<todaysDate){
+            foundErrors.push({ message: "Reservations cannot be made in the past." });
+        }
+        setErrors(foundErrors)
+        if(foundErrors.length > 0) {
+            return false;
+        } else return true
+    }
     const handleSubmit = (e) => {
         e.preventDefault();
-        const errorsList = []
-        for (let [key,value] of Object.entries(formData)) {
-            if (value === ""){
-                errorsList.push({ message : `${key.split("_").join(" ")} cant be blank` })
-            }
+        if (validateDate()) {
+            history.push(`/dashboard?date=${formData.reservation_date}`);
         }
-        setErrors(() => errorsList)
+        // const errorsList = []
+        // for (let [key,value] of Object.entries(formData)) {
+        //     if (value === ""){
+        //         errorsList.push({ message : `${key.split("_").join(" ")} cant be blank` })
+        //     }
+        // }
+        // setErrors(() => errorsList)
         //Right now, we can get the final data when hitting submit button
         //We're gonna make API calls later on
         //We're also able to get Errors when the form fields are blank
         // console.log(formData)
         // console.log(errors)
     }
-
-    const renderErrors = errors.length && errors.map((error,idx) => {
-        return (
-            <ErrorAlert key = {idx} error = {error} /> 
-        )
-    })
+    const renderedErrors = () => {
+        return errors.map((error, idx) => <ErrorAlert key={idx} error={error} />);
+    }
     return (
         <>
-        {errors.length !== 0 && renderErrors}
+        {renderedErrors()}
         <form onSubmit={handleSubmit}>
             <div>
                 <label  htmlFor = "first_name">First Name</label>
