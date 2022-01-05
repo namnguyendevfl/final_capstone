@@ -58,8 +58,8 @@ export default function NewReservations() {
     const handleSubmit = (e) => {
         e.preventDefault();
 		const foundErrors = [];
-        if (validateDate(foundErrors) && validateFields(foundErrors)) {
-            history.push(`/dashboard?date=${formData.reservation_date}`);
+		if(validateFields(foundErrors) && validateDate(foundErrors)) {
+            // history.push(`/dashboard?date=${formData.reservation_date}`);
         }
         setErrors(foundErrors)
     }
