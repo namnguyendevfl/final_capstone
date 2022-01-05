@@ -34,7 +34,13 @@ function Routes() {
     listReservations({ date: date }, abortController.signal)
         .then(setReservations)
         .catch(setReservationsError);
-    return () => abortController.abort();
+
+    // listTables(abortController.signal)
+    //   .then((tables) => tables.sort((tableA, tableB) => tableA.table_id - tableB.table_id))
+    //   .then(setTables)
+    //   .catch(setTablesError);
+  
+      return () => abortController.abort();
   }
   return (
     <Switch>
@@ -57,6 +63,7 @@ function Routes() {
             reservationsError={reservationsError}
             tables={tables}
             tablesError={tablesError}
+            setTables = {setTables}
             loadDashboard={loadDashboard}
           />
       </Route>
