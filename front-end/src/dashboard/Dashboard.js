@@ -1,5 +1,4 @@
-import React, { useEffect, useState } from "react";
-import { listReservations } from "../utils/api";
+import React from "react";
 import { useHistory } from "react-router-dom";
 import { previous, today, next } from "../utils/date-time";
 import ErrorAlert from "../layout/ErrorAlert";
@@ -47,9 +46,7 @@ function Dashboard({ date, reservations, reservationsError, tables, tablesError,
             <th scope="col">Seat</th>
           </tr>
         </thead>
-        <tbody>
-          {renderedReservations()}
-        </tbody>
+        <tbody>{renderedReservations()}</tbody>
       </table>
       <ErrorAlert error = {tablesError} />
       <table className="table">
@@ -63,7 +60,7 @@ function Dashboard({ date, reservations, reservationsError, tables, tablesError,
             <th scope="col">Finish</th>
           </tr>
         </thead>
-        <tbody> {renderedTables()}</tbody>
+        <tbody>{renderedTables()}</tbody>
       </table>
       <div>
         <button onClick={() => history.push(`/dashboard?date=${previous(date)}`)}>Previous</button>
