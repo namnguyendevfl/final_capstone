@@ -2,8 +2,8 @@ import React from "react";
 import { useHistory } from "react-router-dom";
 import { previous, today, next } from "../utils/date-time";
 import ErrorAlert from "../layout/ErrorAlert";
-import ReservationRow from "./reservationRow";
-import TableRow from "./tableRow";
+import ReservationRow from "./ReservationRow";
+import TableRow from "./TableRow";
 
 /**
  * Defines the dashboard page.
