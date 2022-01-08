@@ -7,7 +7,7 @@ import NewReservations from "../reservations/newReservation";
 import useQuery from "../utils/useQuery";
 import NewTable from "../tables/newTable";
 import { listReservations } from "../utils/api";
-import SeatReservation from "../reservations/seatReservation";
+import SeatReservation from "../reservations/seatReservations";
 import Search from "../search/search";
 
 /**
