@@ -14,6 +14,7 @@ import TableRow from "./tableRow";
 function Dashboard({ date, reservations, reservationsError, tables, tablesError, loadDashboard }) {
   const history = useHistory()
 
+  console.log("reservations",reservations)
   const renderedReservations = () => {
     return reservations.map(reservation => 
       <ReservationRow key={reservation.reservation_id} reservation={reservation} />)

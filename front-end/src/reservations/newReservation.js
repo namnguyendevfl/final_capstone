@@ -1,10 +1,13 @@
 import React, {useState} from "react";
 import { useHistory, useParams } from "react-router";
 import ErrorAlert from "../layout/ErrorAlert";
+import { createReservation } from "../utils/api";
 
-export default function NewReservations({edit, reservations}) {
+export default function NewReservations({edit, reservations, loadDashboard}) {
     const history = useHistory()
     const { reservation_id } = useParams();
+	const [apiError, setApiError] = useState(null);
+
     const initialData = {
         first_name: "",
         last_name: "",
@@ -80,11 +83,18 @@ export default function NewReservations({edit, reservations}) {
     }
     const handleSubmit = (e) => {
         e.preventDefault();
+		const abortController = new AbortController();
+
 		const foundErrors = [];
 		if(validateFields(foundErrors) && validateDate(foundErrors)) {
             // history.push(`/dashboard?date=${formData.reservation_date}`);
+            createReservation(formData, abortController.signal)
+					.then(loadDashboard)
+					.then(() => history.push(`/dashboard?date=${formData.reservation_date}`))
+					.catch(setApiError);
         }
         setErrors(foundErrors)
+		return () => abortController.abort();
     }
     const renderedErrors = () => {
         return errors.map((error, idx) => <ErrorAlert key={idx} error={error} />);
@@ -92,6 +102,7 @@ export default function NewReservations({edit, reservations}) {
     return (
         <>
         {renderedErrors()}
+		<ErrorAlert error={apiError} />
         <form onSubmit={handleSubmit}>
             <div>
                 <label  htmlFor = "first_name">First Name</label>

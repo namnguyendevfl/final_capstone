@@ -44,6 +44,7 @@ function Routes() {
   
       return () => abortController.abort();
   }
+
   return (
     <Switch>
       <Route exact={true} path="/">
